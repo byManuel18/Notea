@@ -1,17 +1,21 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Tab 3
+    <ion-title style="text-align: center;">
+      Perfil
     </ion-title>
+    
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+  <ion-card style="text-align: center;" >
+    <img  src={{this.User.avatar}} />
+    <ion-card-header>
+      <ion-card-title  style="text-align: center;">{{this.User.name}}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content style="text-align: center;">
+      <ion-button style="text-align: center;" fill="outline" slot="end" (click)="presentAlertConfirm()">DESCONECTAR</ion-button>
+    </ion-card-content>
+    
+  </ion-card>
 </ion-content>
