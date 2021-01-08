@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
+import { ThemeService } from '../services/theme.service';
 
 @Component({
   selector: 'app-tab3',
@@ -12,7 +13,7 @@ export class Tab3Page implements OnInit {
 
   public User:any=null;
 
-  constructor( private authS:AuthService,private router:Router,public alertController: AlertController) {}
+  constructor( private authS:AuthService,private router:Router,public alertController: AlertController,private theme:ThemeService) {}
   
   
   ngOnInit(): void {
@@ -58,5 +59,12 @@ export class Tab3Page implements OnInit {
   private desconect(){
     this.authS.logout();
     this.router.navigate(['/login'])
+  }
+  enableDark(){
+    this.theme.enableDark();
+  }
+
+  enableLight(){
+    this.theme.enableLight();
   }
 }
