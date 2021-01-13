@@ -1,6 +1,6 @@
 :root{
     .dark-theme{
-        --ion-color-primary: #eb4b58;
+        --ion-color-primary: #04eafa;
         --ion-color-primary-rgb: 235, 75, 88;
         --ion-color-primary-contrast: #ffffff;
         --ion-color-primary-contrast-rgb: 255, 255, 255;
@@ -35,7 +35,8 @@
 
         ion-tab-bar{
             --background: #0f2142;
-            --colr: #fff;
+            --color: #fff;
         }
+    
     }
 }

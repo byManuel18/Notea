@@ -19,17 +19,39 @@ import { AuthService } from './services/auth.service';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { UtilidadesService } from './services/utilidades.service';
 import { Vibration } from '@ionic-native/vibration/ngx';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
+import { Diagnostic } from '@ionic-native/diagnostic/ngx';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
+import {NgxQRCodeModule} from 'ngx-qrcode2';
+import { TranslateModule,TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+
+export function createTranslateLoader(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
+
 
 @NgModule({
   declarations: [AppComponent, EditNotaPage],
   entryComponents: [EditNotaPage],
   imports: [
+    HttpClientModule,
     BrowserModule, 
     ReactiveFormsModule,
     IonicModule.forRoot(), 
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    NgxQRCodeModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (createTranslateLoader),
+        deps: [HttpClient]
+      }
+    })
   ],
   providers: [
     StatusBar,
@@ -39,9 +61,13 @@ import { Vibration } from '@ionic-native/vibration/ngx';
     AuthService,
     NativeStorage,
     UtilidadesService,
+    Geolocation,
+    BarcodeScanner,
+    LaunchNavigator,
+    Diagnostic,
     Vibration,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent,]
 })
 export class AppModule {}

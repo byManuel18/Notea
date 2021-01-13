@@ -35,7 +35,7 @@ export class NotasService {
   }
 
   actualizaNota(id:any, nuevaNota:Nota):Promise<void>{
-    return this.myCollection.doc(id).set({titulo:nuevaNota.titulo, texto:nuevaNota.texto,caseSearch:nuevaNota.caseSearch,user:nuevaNota.user});
+    return this.myCollection.doc(id).set({titulo:nuevaNota.titulo, texto:nuevaNota.texto,caseSearch:nuevaNota.caseSearch,user:nuevaNota.user,fecha:nuevaNota.fecha,coordenadas:nuevaNota.coordenadas});
   }
 
   borraNota(id:any):Promise<void>{

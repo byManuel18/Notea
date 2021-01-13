@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
+import { UtilidadesService } from '../services/utilidades.service';
 
 @Component({
   selector: 'app-tab3',
@@ -13,7 +15,8 @@ export class Tab3Page implements OnInit {
 
   public User:any=null;
 
-  constructor( private authS:AuthService,private router:Router,public alertController: AlertController,private theme:ThemeService) {}
+  constructor( private authS:AuthService,private router:Router,public alertController: AlertController,private theme:ThemeService,public util:UtilidadesService
+    ,private translateService: TranslateService) {}
   
   
   ngOnInit(): void {
@@ -58,13 +61,22 @@ export class Tab3Page implements OnInit {
   
   private desconect(){
     this.authS.logout();
-    this.router.navigate(['/login'])
   }
   enableDark(){
     this.theme.enableDark();
+    this.authS.changeTheme(1);
   }
 
   enableLight(){
     this.theme.enableLight();
+    this.authS.changeTheme(0);
   }
-}
+        
+    changeLeguaje(l:string){
+      console.log("Esta el "+l)
+      if(l!=null){
+        this.translateService.use(l);
+      }
+    }
+  }
+

@@ -1,70 +1,105 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LoadingController, ModalController, ToastController } from '@ionic/angular';
+import { LoadingController, ModalController, Platform, ToastController } from '@ionic/angular';
 import { Nota } from 'src/app/model/nota';
 import { NotasService } from 'src/app/services/notas.service';
+import { UtilidadesService } from 'src/app/services/utilidades.service';
+import * as Leaflet from 'leaflet';
+import { icon, Marker } from 'leaflet';
+import { BarcodeScanner, BarcodeScannerOptions } from '@ionic-native/barcode-scanner/ngx';
+
 
 @Component({
   selector: 'app-edit-nota',
   templateUrl: './edit-nota.page.html',
   styleUrls: ['./edit-nota.page.scss'],
 })
-export class EditNotaPage {
+export class EditNotaPage implements OnInit,OnDestroy{
 
   @Input('nota') nota: Nota;
 
   public tasks: FormGroup;
+  public actualizargeo:boolean=false;
+  public coordenadasanteriores:{
+    latitude:number,
+    longitude:number
+  }=null;
+  map: Leaflet.Map;
+  ver:boolean;
+   iconRetinaUrl = 'assets/marker-icon-2x.png';
+   iconUrl = 'assets/marker-icon.png';
+   shadowUrl = 'assets/marker-shadow.png';
+   iconDefault = icon({
+  iconRetinaUrl:this.iconRetinaUrl,
+  iconUrl:this.iconUrl,
+  shadowUrl:this.shadowUrl,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  tooltipAnchor: [16, -28],
+  shadowSize: [41, 41]
+});
 
-  constructor(private formBuilder: FormBuilder, private notasS: NotasService, public loadingController: LoadingController, public toastController: ToastController, private modalController: ModalController) {
+encodeData: any;
+  scannedData: {};
+
+  constructor(private formBuilder: FormBuilder, private notasS: NotasService, public toastController: ToastController, 
+    private modalController: ModalController,private util:UtilidadesService,private barcodeScanner: BarcodeScanner) {
     this.tasks = this.formBuilder.group({
       title:['',Validators.required],
       description:['']
     });
+    Marker.prototype.options.icon = this.iconDefault;
+    
   }
 
-  ionViewDidEnter(){
+  async ngOnInit() {
+    
+  }
+    ionViewDidEnter(){
     this.tasks.get('title').setValue(this.nota.titulo);
-    this.tasks.get('description').setValue(this.nota.texto)
+    this.tasks.get('description').setValue(this.nota.texto);
+    //this.encodeData =JSON.stringify(this.nota);
+    if(this.nota.coordenadas!=null){
+      this.coordenadasanteriores={
+        latitude:this.nota.coordenadas.latitude,
+        longitude:this.nota.coordenadas.longitude
+      }
+      this.ver=true;
+      this.leafletMap();
+    }
   }
   
   public async sendForm() {
-    await this.presentLoading();
+    await this.util.present();
+    
     let ti:string=this.tasks.get('title').value;
+    if(!this.actualizargeo){
+      if(this.coordenadasanteriores!=null){
+        this.nota.coordenadas.latitude=this.coordenadasanteriores.latitude;
+        this.nota.coordenadas.longitude=this.coordenadasanteriores.longitude;
+      }else{
+        this.nota.coordenadas=null;
+      }
+      
+    }
     let data: Nota = {
       titulo: ti.toUpperCase(),
       texto: this.tasks.get('description').value,
       caseSearch:this.setSearchParam(ti.toUpperCase()),
-      user:this.nota.user
+      user:this.nota.user,
+      fecha:new Date().toLocaleString(),
+      coordenadas:this.nota.coordenadas
     }
     this.notasS.actualizaNota(this.nota.id, data).then((respuesta) => {
-      this.loadingController.dismiss();
-      this.presentToast("Nota guardada", "success");
+      this.util.dismiss();
+      this.util.presentToast("Nota guardada", "success");
       this.modalController.dismiss();
     }).catch((err) => {
-      this.loadingController.dismiss();
-      this.presentToast("Error guardando nota", "danger");
+      this.util.dismiss();
+      this.util.presentToast("Error guardando nota", "danger");
       console.log(err);
     });
-  }
-
-  async presentLoading() {
-    const loading = await this.loadingController.create({
-      cssClass: 'my-custom-class',
-      message: '',
-      spinner: 'crescent'
-      //duration: 2000
-    });
-    await loading.present();
-  }
-
-  async presentToast(msg: string, col: string) {
-    const toast = await this.toastController.create({
-      message: msg,
-      color: col,
-      duration: 2000,
-      position: "top",
-    });
-    toast.present();
   }
   public setSearchParam(caseNumber:string) {
     let caseSearchList:string[] = [];
@@ -74,6 +109,82 @@ export class EditNotaPage {
       caseSearchList.push(temp);
     }
     return caseSearchList;
+  }
+
+  public Return(){
+    this.modalController.dismiss();
+  }
+  public ActivatedDesactivatedGeolo($event){
+    this.actualizargeo=$event.detail.checked;
+    if(this.actualizargeo){
+      this.util.present();
+      this.util.getGeolocation().then((resp) => {
+        // resp.coords.latitude
+        console.log(resp.coords.latitude);
+        console.log(resp.coords.longitude);
+        this.nota.coordenadas={
+          latitude:resp.coords.latitude,
+          longitude:resp.coords.longitude
+        }
+        this.util.dismiss();
+        if(this.map==null){
+          this.map = Leaflet.map('mapId').setView([this.nota.coordenadas.latitude,this.nota.coordenadas.longitude], 15);
+          Leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'edupala.com © Angular LeafLet',
+          }).addTo(this.map);
+        }
+        this.map.setView([this.nota.coordenadas.latitude,this.nota.coordenadas.longitude], 15);
+        Leaflet.marker([this.nota.coordenadas.latitude,this.nota.coordenadas.longitude]).addTo(this.map).bindPopup(this.nota.titulo).openPopup();
+        // resp.coords.longitude
+       }).catch((error) => {
+        this.util.dismiss();
+         console.log('Error getting location', error);
+         this.util.presentToast(error,"danger");
+       });
+    }else{
+      if(this.coordenadasanteriores==null){
+        this.nota.coordenadas==null;
+        this.util.presentToast('No había localización anterior','medium');
+      }else{
+        this.nota.coordenadas=this.coordenadasanteriores;
+        this.map.setView([this.nota.coordenadas.latitude,this.nota.coordenadas.longitude], 15);
+        Leaflet.marker([this.nota.coordenadas.latitude,this.nota.coordenadas.longitude]).addTo(this.map).bindPopup(this.nota.titulo).openPopup();
+      }
+      
+    }
+  }
+
+  ngOnDestroy(){
+    this.map.remove();
+  }
+  ionViewDidLeave(){
+    this.map.remove();
+  }
+  leafletMap() {
+    if(this.ver){
+        this.map = Leaflet.map('mapId').setView([this.nota.coordenadas.latitude,this.nota.coordenadas.longitude], 15);
+      Leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'edupala.com © Angular LeafLet',
+      }).addTo(this.map);
+      Leaflet.marker([this.nota.coordenadas.latitude,this.nota.coordenadas.longitude]).addTo(this.map).bindPopup(this.nota.titulo).openPopup();
+    }
+  }
+
+  
+
+  encodedText() {
+    let s:string=JSON.stringify(this.nota);
+    this.barcodeScanner
+      .encode(this.barcodeScanner.Encode.TEXT_TYPE,s)
+      .then(
+        encodedData => {
+          console.log(encodedData);
+          this.encodeData = encodedData;
+        },
+        err => {
+          console.log("Error occured : " + err);
+        }
+      );
   }
 
 }

@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { EditNotaPageRoutingModule } from './edit-nota-routing.module';
 
 import { EditNotaPage } from './edit-nota.page';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
@@ -14,8 +15,10 @@ import { EditNotaPage } from './edit-nota.page';
     FormsModule,
     IonicModule,
     ReactiveFormsModule,
-    EditNotaPageRoutingModule
+    EditNotaPageRoutingModule,
+    TranslateModule
   ],
-  declarations: [EditNotaPage]
+  declarations: [EditNotaPage],
+  exports:[TranslateModule]
 })
 export class EditNotaPageModule {}

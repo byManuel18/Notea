@@ -1,7 +1,7 @@
 <ion-header style="text-align: center;" [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      AÑADIR TAREA
+      {{ 'AÑADIR_TAREA_UP' | translate }}
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -15,9 +15,15 @@
       <ion-textarea formControlName="description" placeholder="Descripción" autocapitalize="true" auto-grow="true">
       </ion-textarea>
     </ion-item>
+    
+      <ion-label style="text-align: center;">{{ 'ACTIVAR_GEOLICALIZACIÓN' | translate }}</ion-label><br>
+      <ion-toggle [checked]="this.geoactivated" style="text-align: center;" (ionChange)="ActivatedDesactivatedGeolo($event)"></ion-toggle>
+    
     <div style="text-align: center;">
-      <ion-button shape="round" color="primary" fill="outline" type="submit" [disabled]="!tasks.valid">Añadir
+      <ion-button shape="round" color="primary" fill="outline" type="submit" [disabled]="!tasks.valid">{{ 'AÑADIR' | translate }}
       </ion-button>
     </div>
   </form>
+  <ion-button style="text-align: center;" shape="round" color="primary" fill="outline" (click)="scanCode()">{{ 'ESCANEAR' | translate }}
+  </ion-button>
 </ion-content>

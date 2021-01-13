@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title style="text-align: center;">
-      Perfil
+      {{ 'PERFIL_UP' | translate }}
     </ion-title>
     
   </ion-toolbar>
@@ -14,10 +14,12 @@
       <ion-card-title  style="text-align: center;">{{this.User.name}}</ion-card-title>
     </ion-card-header>
     <ion-card-content style="text-align: center;">
-      <ion-button style="text-align: center;" fill="outline" slot="end" (click)="presentAlertConfirm()">DESCONECTAR</ion-button>
+      <ion-button style="text-align: center;" fill="outline" slot="end" (click)="presentAlertConfirm()">{{ 'DESCONECTAR' | translate }}</ion-button>
     </ion-card-content>
     
   </ion-card>
-  <ion-button (click)="enableDark()">Modo oscuro</ion-button>
-  <ion-button (click)="enableLight()">Quitar modo oscuro</ion-button>
+  <ion-button (click)="enableDark()">{{ 'MODO_OSCURO' | translate }} </ion-button>
+  <ion-button (click)="enableLight()">{{ 'MODO_NORMAL' | translate }}</ion-button>
+  <ion-button (click)="this.changeLeguaje('es')">Español</ion-button>
+  <ion-button (click)="this.changeLeguaje('en')">Ingles</ion-button>
 </ion-content>

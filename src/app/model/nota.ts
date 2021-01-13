@@ -4,7 +4,10 @@ export interface Nota{
     texto:string,
     caseSearch:any,
     fecha?:any,
-    coordenadas?:any,
+    coordenadas?:{
+        latitude:number,
+        longitude:number;
+    },
     imagen?:any,
     user:any
     
