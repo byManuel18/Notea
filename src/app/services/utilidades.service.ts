@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Vibration } from '@ionic-native/vibration/ngx';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
-import { LoadingController, NavController, ToastController } from '@ionic/angular';
+import { LoadingController, NavController, Platform, ToastController } from '@ionic/angular';
 import { LaunchNavigator, LaunchNavigatorOptions } from '@ionic-native/launch-navigator/ngx';
 import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from './auth.service';
 
 
 
@@ -17,7 +18,7 @@ export class UtilidadesService {
   isLoading = true;
   constructor(private vibration: Vibration, private geolocation: Geolocation, public toastController: ToastController,
     public navCtrl: NavController, private launchNavigator: LaunchNavigator, public loadingController: LoadingController, private diagnostic: Diagnostic,
-    private translateService: TranslateService) { }
+    private translateService: TranslateService,private platform:Platform) { }
 
   public Vibrar() {
     this.vibration.vibrate(1000);
@@ -82,19 +83,22 @@ export class UtilidadesService {
 }
 
 iniciarLenguaje(){
-  this.translateService.setDefaultLang('es');
-  this.translateService.use('es');
+  this.translateService.setDefaultLang('en');
+  this.translateService.use('en');
+  console.log(this.translateService.currentLang);
   try {
     this.translateService.use(this.translateService.getBrowserLang());
   } catch (error) {
     
   }
 }
-
-changeLeguaje(l:string){
-  console.log("Esta el "+l)
-  if(l!=null){
-    this.translateService.use(l);
+  verPlataforma():boolean{
+    let pc=false;
+      if(this.platform.is('android')){
+        pc=false;
+      }else{
+        pc=true;
+      }
+    return pc;
   }
-}
 }

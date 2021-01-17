@@ -100,7 +100,6 @@
         "PLAY_SERVICES_VERSION": "15.0.1"
       },
       "cordova-plugin-vibration": {},
-      "cordova-plugin-geolocation": {},
       "uk.co.workingedge.phonegap.plugin.launchnavigator": {
         "GOOGLE_API_KEY_FOR_ANDROID": "AIzaSyBHEYwTX-PDP97A-t7T32h2vgIkF2_q4Lk",
         "OKHTTP_VERSION": "3.12.0"
@@ -111,6 +110,9 @@
       "cordova-plugin-androidx": {},
       "phonegap-plugin-barcodescanner": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      },
+      "cordova-plugin-geolocation": {
+        "GPS_REQUIRED": "true"
       }
     },
     "platforms": [

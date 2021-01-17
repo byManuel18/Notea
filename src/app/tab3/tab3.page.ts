@@ -13,7 +13,15 @@ import { UtilidadesService } from '../services/utilidades.service';
 })
 export class Tab3Page implements OnInit {
 
-  public User:any=null;
+  public User:{
+    token:any,
+    name:any,
+    avatar:any,
+    theme:any,
+    idiom:any,
+  }=null;
+  public darkmode=false;
+  public ingles=false;
 
   constructor( private authS:AuthService,private router:Router,public alertController: AlertController,private theme:ThemeService,public util:UtilidadesService
     ,private translateService: TranslateService) {}
@@ -23,12 +31,21 @@ export class Tab3Page implements OnInit {
     this.User={
       token:this.authS.user.token,
       name:this.authS.user.name,
-      avatar:this.authS.user.avatar
-
+      avatar:this.authS.user.avatar,
+      theme:this.authS.user.theme,
+      idiom:this.authS.user.idiom
     }
   }
   ionViewDidEnter(){
     this.ngOnInit();
+    if(this.User.theme==1){
+      this.darkmode=true;
+    }
+    if(this.translateService.currentLang=='es'){
+      this.ingles=false;
+    }else{
+      this.ingles=true;
+    }
   }
 
   async presentAlertConfirm(){
@@ -48,6 +65,7 @@ export class Tab3Page implements OnInit {
           text: 'DESCONECTAR',
           handler: () => {
             this.desconect();
+            this.translateService.use(this.translateService.getBrowserLang());
             console.log('Confirm Okay');
           }
         }
@@ -67,16 +85,52 @@ export class Tab3Page implements OnInit {
     this.authS.changeTheme(1);
   }
 
+  changeTheme($event){
+    console.log($event)
+    if($event.detail.checked){
+      this.darkmode=true;
+      this.enableDark();
+    }else{
+      this.darkmode=false;
+      this.enableLight();
+    }
+  }
+
   enableLight(){
     this.theme.enableLight();
     this.authS.changeTheme(0);
+  }
+
+  changeLenguaje2($event){
+    if($event.detail.checked){
+      this.changeLeguaje('en');
+    }else{
+      this.changeLeguaje('es');
+    }
+    
   }
         
     changeLeguaje(l:string){
       console.log("Esta el "+l)
       if(l!=null){
         this.translateService.use(l);
+        this.authS.changeIdiomaStorage(l);
       }
+    }
+
+    async prueba(){
+      console.log("1");
+      await this.util.verLocalizaAvaliable().then((date)=>{
+        
+        console.log("2");
+        
+      },(error)=>{
+        console.log("2");
+      }).catch((e)=>{
+        console.log(e);
+        
+      });
+      console.log("3");
     }
   }
 

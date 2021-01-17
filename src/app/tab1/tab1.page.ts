@@ -18,13 +18,14 @@ export class Tab1Page{
   public listaNotas = [];
 
   constructor(private notasS: NotasService, private modalController:ModalController,private utilidades:UtilidadesService,
-    private utils:UtilidadesService,
     private nativeStorage:NativeStorage, private authS:AuthService, private router:Router,public alertController: AlertController) { }
 
   public async logout(){
     await this.authS.logout();
     if(!this.authS.isLogged()){
       this.router.navigate(['/login'])
+    }else{
+      
     }
   }
   

@@ -22,5 +22,7 @@
     "EDITAR":"EDIT",
     "COMPARTIR_NOTA_QR":"SHARE QR NOTE",
     "ATRÁS":"RETURN",
-    "ACTUALIZAR_GEOLICALIZACIÓN":"Update Geolocation?"
+    "ACTUALIZAR_GEOLICALIZACIÓN":"Update Geolocation?",
+    "INGLES":"ENGLISH",
+    "OPCIONES":"OPTIONS"
   }

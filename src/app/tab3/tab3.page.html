@@ -1,5 +1,35 @@
+
+
+
+ <ion-menu side="start" content-id="main-content">
+  <ion-header>
+    <ion-toolbar translucent>
+      <ion-title>{{ 'OPCIONES' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-item>
+        <ion-icon name="moon"></ion-icon>
+        <ion-label style="text-align: center;">{{ 'MODO_OSCURO' | translate }}</ion-label>
+        <ion-checkbox  [checked]="this.darkmode" (ionChange)="changeTheme($event)"></ion-checkbox>
+      </ion-item>
+      <ion-item>
+        <ion-icon name="earth"></ion-icon>
+        <ion-label style="text-align: center;">{{ 'INGLES' | translate }}</ion-label>
+        <ion-checkbox [checked]="this.ingles" (ionChange)="changeLenguaje2($event)"></ion-checkbox>
+      </ion-item>
+      <ion-button style="text-align: center;" fill="outline" slot="end" (click)="prueba()">Prueba</ion-button>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<div class="ion-page" id="main-content">
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title style="text-align: center;">
       {{ 'PERFIL_UP' | translate }}
     </ion-title>
@@ -16,10 +46,6 @@
     <ion-card-content style="text-align: center;">
       <ion-button style="text-align: center;" fill="outline" slot="end" (click)="presentAlertConfirm()">{{ 'DESCONECTAR' | translate }}</ion-button>
     </ion-card-content>
-    
   </ion-card>
-  <ion-button (click)="enableDark()">{{ 'MODO_OSCURO' | translate }} </ion-button>
-  <ion-button (click)="enableLight()">{{ 'MODO_NORMAL' | translate }}</ion-button>
-  <ion-button (click)="this.changeLeguaje('es')">Español</ion-button>
-  <ion-button (click)="this.changeLeguaje('en')">Ingles</ion-button>
 </ion-content>
+</div>

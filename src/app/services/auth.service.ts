@@ -4,6 +4,7 @@ import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTr
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { ThemeService } from './theme.service';
 import { UtilidadesService } from './utilidades.service';
+import { TranslateService } from '@ngx-translate/core';
 
 
 
@@ -17,10 +18,11 @@ export class AuthService implements CanActivate{
     name:'',
     avatar:'',
     theme:-1,
+    idiom:'',
   }
 
-  constructor(private storage:NativeStorage, private google:GooglePlus, private router:Router,private utilS:UtilidadesService,private themeS:ThemeService) {
-
+  constructor(private storage:NativeStorage, private google:GooglePlus, private router:Router,private utilS:UtilidadesService,private themeS:ThemeService,private translate:TranslateService ) {
+    
    }
   canActivate(route:ActivatedRouteSnapshot):boolean{
     if(!this.isLogged()){
@@ -40,6 +42,7 @@ export class AuthService implements CanActivate{
     }
     if(u!=null){
       this.user=u;
+      
       if(this.user.theme==1){
         this.themeS.enableDark();
       }
@@ -55,23 +58,34 @@ export class AuthService implements CanActivate{
    }
 
    public async logout(){
-     this.utilS.present();
-     let u = await this.google.logout();
-     this.user={
-       token: -1,
-       name:'',
-       avatar:'',
-       theme:-1,
-     }
-     await this.storage.setItem("user",this.user).then((e)=>{
-      this.utilS.dismiss();
+     
+     let u = await this.google.logout().then((e)=>{
       this.themeS.enableLight();
-      this.router.navigate(["login"]);
+      this.user={
+        token: -1,
+        name:'',
+        avatar:'',
+        theme:-1,
+        idiom:'',
+      }
+       this.storage.setItem("user",this.user);
+       this.router.navigate(["login"]);
     }).catch((err)=>{
-      this.utilS.dismiss();
+      this.google.trySilentLogin({});
+      this.google.logout();
+      console.log(err);
       this.themeS.enableLight();
       this.router.navigate(["login"]);
+      this.user={
+        token: -1,
+        name:'',
+        avatar:'',
+        theme:-1,
+        idiom:''
+      }
+       this.storage.setItem("user",this.user);
     });
+     
      
    }
    public async login(){
@@ -85,6 +99,7 @@ export class AuthService implements CanActivate{
            name: u['displayName'],
            avatar: u['imageUrl'],
            theme:-1,
+           idiom:''
          }
          console.log(this.user);
        }
@@ -93,7 +108,8 @@ export class AuthService implements CanActivate{
          token:-1,
          name:'',
          avatar:'',
-         theme:-1
+         theme:-1,
+         idiom:''
        }
      }
      await this.storage.setItem("user",this.user);
@@ -102,11 +118,18 @@ export class AuthService implements CanActivate{
 
    async changeTheme(n:number){
     this.user.theme=n;
-    this.utilS.present();
     await this.storage.setItem("user",this.user).then((e)=>{
-      this.utilS.dismiss();
     }).catch((err)=>{
-      this.utilS.dismiss();
+     
+    });
+   }
+
+   async changeIdiomaStorage(s:string){
+    this.user.idiom=s;
+    console.log(this.user);
+    await this.storage.setItem("user",this.user).then((e)=>{
+    }).catch((err)=>{
+     
     });
    }
 

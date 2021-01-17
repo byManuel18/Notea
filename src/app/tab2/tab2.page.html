@@ -15,15 +15,16 @@
       <ion-textarea formControlName="description" placeholder="Descripción" autocapitalize="true" auto-grow="true">
       </ion-textarea>
     </ion-item>
-    
+    <ion-item>
       <ion-label style="text-align: center;">{{ 'ACTIVAR_GEOLICALIZACIÓN' | translate }}</ion-label><br>
       <ion-toggle [checked]="this.geoactivated" style="text-align: center;" (ionChange)="ActivatedDesactivatedGeolo($event)"></ion-toggle>
-    
+    </ion-item>
     <div style="text-align: center;">
       <ion-button shape="round" color="primary" fill="outline" type="submit" [disabled]="!tasks.valid">{{ 'AÑADIR' | translate }}
       </ion-button>
     </div>
   </form>
-  <ion-button style="text-align: center;" shape="round" color="primary" fill="outline" (click)="scanCode()">{{ 'ESCANEAR' | translate }}
+  
+  <ion-button *ngIf="!this.utils.verPlataforma()" style="text-align: center;" shape="round" color="primary" fill="outline" (click)="scanCode()">{{ 'ESCANEAR' | translate }}
   </ion-button>
 </ion-content>

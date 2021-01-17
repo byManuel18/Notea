@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-tabs',
@@ -7,6 +9,15 @@ import { Component } from '@angular/core';
 })
 export class TabsPage {
 
-  constructor() {}
+  constructor(private traslator:TranslateService,private authS:AuthService) {}
+  
+
+  ngOnInit(){
+    if(this.authS.user.idiom!=''){
+      console.log('aqui');
+      
+      this.traslator.use(this.authS.user.idiom);
+    }
+  }
 
 }

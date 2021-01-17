@@ -13,130 +13,136 @@ import { UtilidadesService } from '../services/utilidades.service';
   styleUrls: ['tab2.page.scss']
 })
 export class Tab2Page implements OnInit {
-  public tasks:FormGroup;
-  public geoactivated:boolean=false;
-  public coordenadas:{
-    latitude:number,
-    longitude:number
-  }=null;
+  public tasks: FormGroup;
+  public geoactivated: boolean = false;
+  public coordenadas: {
+    latitude: number,
+    longitude: number
+  } = null;
   isLoading = false;
   barcodeScannerOptions: BarcodeScannerOptions;
   encodeData: any;
   //scannedData: {};
 
-  constructor(private formBuilder:FormBuilder, private notasS:NotasService,private auth:AuthService
-    ,private utils:UtilidadesService,private barcodeScanner: BarcodeScanner,public alertController: AlertController ) {
-      this.tasks=this.formBuilder.group({
-        title:['',Validators.required],
-        description:['']
-      });
-    this.geoactivated=false;
+  constructor(private formBuilder: FormBuilder, private notasS: NotasService, private auth: AuthService
+    , public utils: UtilidadesService, private barcodeScanner: BarcodeScanner, public alertController: AlertController) {
+    this.tasks = this.formBuilder.group({
+      title: ['', Validators.required],
+      description: ['']
+    });
+    this.geoactivated = false;
     this.barcodeScannerOptions = {
       showTorchButton: true,
       showFlipCameraButton: true,
     };
-    
+
   }
-  ngOnInit(){
-    
+  ngOnInit() {
+
   }
-  ionViewDidEnter(){
-    this.geoactivated=false;
+  ionViewDidEnter() {
+    this.geoactivated = false;
     this.tasks.get('title').setValue('');
     this.tasks.get('description').setValue('');
   }
-  public async sendForm(){
-    
-    if(!this.geoactivated){
-      this.coordenadas=null;
+  public async sendForm() {
+
+    if (!this.geoactivated) {
+      this.coordenadas = null;
     }
     await this.utils.present();
-    let ti:string=this.tasks.get('title').value;
-    let data:Nota={
-      titulo:ti.toUpperCase(),
-      texto:this.tasks.get('description').value,
-      caseSearch:this.setSearchParam(ti.toUpperCase()),
-      user:this.auth.user.token,
-      fecha:new Date().toLocaleString(),
-      coordenadas:this.coordenadas
-    } 
-    this.notasS.agregaNota(data).then((respuesta)=>{
+    let ti: string = this.tasks.get('title').value;
+    let data: Nota = {
+      titulo: ti.toUpperCase(),
+      texto: this.tasks.get('description').value,
+      caseSearch: this.setSearchParam(ti.toUpperCase()),
+      user: this.auth.user.token,
+      fecha: new Date().toLocaleString(),
+      coordenadas: this.coordenadas
+    }
+    this.notasS.agregaNota(data).then((respuesta) => {
       this.tasks.setValue({
-        title:'',
-        description:''
-      })
-      this.coordenadas=null;
-      this.geoactivated=false;
+        title: '',
+        description: ''
+      });
+      this.coordenadas = null;
+      this.geoactivated = false;
       this.utils.dismiss();
-      this.utils.presentToast("Nota guardada","success");
-    }).catch((err)=>{
+      this.utils.presentToast("Nota guardada", "success");
+    }).catch((err) => {
       this.utils.dismiss();
-      this.utils.presentToast("Error guardando nota","danger");
+      this.utils.presentToast("Error guardando nota", "danger");
       console.log(err);
     });
-    
+
   }
 
-  public setSearchParam(caseNumber:string) {
-    let caseSearchList:string[] = [];
-    let  temp:string = "";
-    for(let  i:number = 0; i < caseNumber.length; i++){
+  public setSearchParam(caseNumber: string) {
+    let caseSearchList: string[] = [];
+    let temp: string = "";
+    for (let i: number = 0; i < caseNumber.length; i++) {
       temp = temp + caseNumber[i];
       caseSearchList.push(temp);
     }
     return caseSearchList;
   }
 
-  public ActivatedDesactivatedGeolo($event){
-    if($event.detail.checked){
-      /*NO VA
-      this.utils.present();
-      this.utils.verLocalizaAvaliable().then((date)=>{
-        if(date==true){
-          this.geoactivated==true;
-          this.utils.dismiss();
-          alert("Si está");
-          if(this.geoactivated==true){
-            this.GetCoordenadas();
+  public async ActivatedDesactivatedGeolo($event) {
+    if ($event.detail.checked) {
+      console.log("1");
+      if (!this.utils.verPlataforma()) {
+        //await this.utils.present();
+        console.log("2");
+        await this.utils.verLocalizaAvaliable().then(async (date) => {
+          console.log("3");
+          if (date== true) {
+            this.geoactivated = true;
+            // this.utils.dismiss();
+            console.log("4");
+            await this.GetCoordenadas();
+          } else {
+            this.geoactivated = false;
+            //this.utils.dismiss();
+            await alert("No está disponible la ubicación");
+           
           }
-        }else{
-          this.geoactivated==false;
-          $event.detail.checked=false;
-          this.utils.dismiss();
-          alert("No está disponible la ubicación");
+
+        }, (error) => {
+          //this.utils.dismiss();
+          this.utils.presentToast(error, "danger");
+        });
+      }else {
+        this.geoactivated = true;
+        if (this.geoactivated == true) {
+          await this.GetCoordenadas();
+        } else {
+          this.geoactivated = false;
         }
-        
-      },(error)=>{
-        this.utils.dismiss();
-        this.utils.presentToast(error,"danger");
-      });*/
-      
-      this.geoactivated=true;
-      if(this.geoactivated==true){
-        this.GetCoordenadas();
       }
     }else{
       this.geoactivated=false;
     }
+    console.log("5");
   }
 
-  private  GetCoordenadas(){
-    this.utils.present();
-    this.utils.getGeolocation().then((resp) => {
+  async GetCoordenadas() {
+    await this.utils.present();
+    await this.utils.getGeolocation().then((resp) => {
       // resp.coords.latitude
       console.log(resp.coords.latitude);
       console.log(resp.coords.longitude);
-      this.coordenadas={
-        latitude:resp.coords.latitude,
-        longitude:resp.coords.longitude
+      this.coordenadas = {
+        latitude: resp.coords.latitude,
+        longitude: resp.coords.longitude
       }
       this.utils.dismiss();
       // resp.coords.longitude
-     }).catch((error) => {
-       this.utils.dismiss();
-       console.log('Error getting location', error);
-       this.utils.presentToast(error,"danger");
-     });
+    }).catch((error) => {
+      this.geoactivated = false;
+      this.utils.dismiss();
+      console.log('Error getting location', error);
+      this.utils.presentToast(error, "Ubicación no disponible");
+    });
   }
 
   scanCode() {
@@ -144,10 +150,10 @@ export class Tab2Page implements OnInit {
       .scan(this.barcodeScannerOptions)
       .then(barcodeData => {
         //alert("Barcode data " + barcodeData.text);
-        let n:Nota=JSON.parse(barcodeData.text);
-        if(n!=null){
+        let n: Nota = JSON.parse(barcodeData.text);
+        if (n != null) {
           this.presentAlertConfirm(n);
-          
+
         }
         // alert("Barcode data " + JSON.stringify(barcodeData));
         //this.scannedData = barcodeData;
@@ -157,8 +163,8 @@ export class Tab2Page implements OnInit {
       });
   }
 
-  async presentAlertConfirm(n:Nota){
-    
+  async presentAlertConfirm(n: Nota) {
+
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'INFORMACIÓN',
@@ -175,27 +181,27 @@ export class Tab2Page implements OnInit {
           text: 'AGREGAR',
           handler: () => {
 
-            this.utils.present();         
-            let data:Nota={
-              titulo:n.titulo,
-              texto:n.texto,
-              caseSearch:n.caseSearch,
-              user:this.auth.user.token,
-              fecha:new Date().toLocaleString(),
-              coordenadas:n.coordenadas
-            } 
-            this.notasS.agregaNota(data).then((respuesta)=>{
+            this.utils.present();
+            let data: Nota = {
+              titulo: n.titulo,
+              texto: n.texto,
+              caseSearch: n.caseSearch,
+              user: this.auth.user.token,
+              fecha: new Date().toLocaleString(),
+              coordenadas: n.coordenadas
+            }
+            this.notasS.agregaNota(data).then((respuesta) => {
               this.tasks.setValue({
-                title:'',
-                description:''
+                title: '',
+                description: ''
               })
-              this.coordenadas=null;
-              this.geoactivated=false;
+              this.coordenadas = null;
+              this.geoactivated = false;
               this.utils.dismiss();
-              this.utils.presentToast("Nota guardada","success");
-            }).catch((err)=>{
+              this.utils.presentToast("Nota guardada", "success");
+            }).catch((err) => {
               this.utils.dismiss();
-              this.utils.presentToast("Error guardando nota","danger");
+              this.utils.presentToast("Error guardando nota", "danger");
               console.log(err);
             });
 
@@ -206,7 +212,7 @@ export class Tab2Page implements OnInit {
     });
 
     await alert.present();
-   
+
   }
 
 }

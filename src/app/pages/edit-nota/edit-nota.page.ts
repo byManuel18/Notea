@@ -41,10 +41,11 @@ export class EditNotaPage implements OnInit,OnDestroy{
 });
 
 encodeData: any;
+data:string=null;
   scannedData: {};
 
   constructor(private formBuilder: FormBuilder, private notasS: NotasService, public toastController: ToastController, 
-    private modalController: ModalController,private util:UtilidadesService,private barcodeScanner: BarcodeScanner) {
+    private modalController: ModalController,public util:UtilidadesService,private barcodeScanner: BarcodeScanner) {
     this.tasks = this.formBuilder.group({
       title:['',Validators.required],
       description:['']
@@ -59,6 +60,7 @@ encodeData: any;
     ionViewDidEnter(){
     this.tasks.get('title').setValue(this.nota.titulo);
     this.tasks.get('description').setValue(this.nota.texto);
+    this.data=JSON.stringify(this.nota);
     //this.encodeData =JSON.stringify(this.nota);
     if(this.nota.coordenadas!=null){
       this.coordenadasanteriores={
@@ -114,11 +116,11 @@ encodeData: any;
   public Return(){
     this.modalController.dismiss();
   }
-  public ActivatedDesactivatedGeolo($event){
+  public async ActivatedDesactivatedGeolo($event){
     this.actualizargeo=$event.detail.checked;
     if(this.actualizargeo){
-      this.util.present();
-      this.util.getGeolocation().then((resp) => {
+      await this.util.present();
+      await this.util.getGeolocation().then((resp) => {
         // resp.coords.latitude
         console.log(resp.coords.latitude);
         console.log(resp.coords.longitude);
@@ -159,6 +161,7 @@ encodeData: any;
   }
   ionViewDidLeave(){
     this.map.remove();
+    Leaflet.map('mapId').remuve();
   }
   leafletMap() {
     if(this.ver){

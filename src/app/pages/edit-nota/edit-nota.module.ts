@@ -8,6 +8,7 @@ import { EditNotaPageRoutingModule } from './edit-nota-routing.module';
 
 import { EditNotaPage } from './edit-nota.page';
 import { TranslateModule } from '@ngx-translate/core';
+import { NgxQRCodeModule } from 'ngx-qrcode2';
 
 @NgModule({
   imports: [
@@ -16,7 +17,8 @@ import { TranslateModule } from '@ngx-translate/core';
     IonicModule,
     ReactiveFormsModule,
     EditNotaPageRoutingModule,
-    TranslateModule
+    TranslateModule,
+    NgxQRCodeModule
   ],
   declarations: [EditNotaPage],
   exports:[TranslateModule]

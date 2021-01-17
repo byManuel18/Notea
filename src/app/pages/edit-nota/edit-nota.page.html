@@ -16,13 +16,17 @@
     <ion-item>
       <ion-label auto-grow="true">{{ 'FECHA_ACTUALIZACIÓN' | translate }} {{nota.fecha}} </ion-label>
     </ion-item>
-    <ion-label style="text-align: center;">{{ 'ACTUALIZAR_GEOLICALIZACIÓN' | translate }}</ion-label><br>
-    <ion-toggle style="text-align: center;" (ionChange)="ActivatedDesactivatedGeolo($event)"></ion-toggle><br>
+    <ion-item>
+      <ion-label style="text-align: center;">{{ 'ACTUALIZAR_GEOLICALIZACIÓN' | translate }}</ion-label><br>
+      <ion-toggle style="text-align: center;" (ionChange)="ActivatedDesactivatedGeolo($event)"></ion-toggle><br>
+    </ion-item>
+    
     <ion-button shape="round" color="primary" fill="outline" type="submit" [disabled]="!tasks.valid">{{ 'EDITAR' | translate }}</ion-button>
   </form>
   <div id="mapId"></div><br>
   <div style="text-align: center;">
-    <ion-button shape="round" color="primary" fill="outline" (click)="encodedText()">{{ 'COMPARTIR_NOTA_QR' | translate }}</ion-button><br>
+    <ngx-qrcode *ngIf="!this.util.verPlataforma()" [(value)]="this.data"></ngx-qrcode>
+    <!--<ion-button *ngIf="!this.util.verPlataforma()" shape="round" color="primary" fill="outline" (click)="encodedText()">{{ 'COMPARTIR_NOTA_QR' | translate }}</ion-button><br>-->
     <ion-button shape="round" color="primary" fill="outline" (click)="Return()">{{ 'ATRÁS' | translate }}</ion-button><br>
     <div *ngIf="scannedData">
     </div>
